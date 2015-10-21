@@ -49,7 +49,7 @@ class TrelloPoller {
           this._context.subscription.delayTill(new Moment().add(1, 'hour').toDate());
           throw new ConnectorRequiresAuthorizationError();
         }
-        if (!this._context.authorization.get('SubscriptionRepository')) {
+        if (!this._context.authorization.get('SubscriptionModelId')) {
           this._logger.warn('Connector needs a subscription repository and none set');
           //we've already setup this subscription
           this._context.subscription.delayTill(new Moment().add(1, 'hour').toDate());
