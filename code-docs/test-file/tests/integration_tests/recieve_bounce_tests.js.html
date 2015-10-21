@@ -100,7 +100,68 @@ describe(&apos;receiveBounce&apos;, () =&gt; {
     });
     it(&apos;should redirect&apos;, () =&gt; {
       return expect(bounce.redirect)
-        .to.have.been.calledWith(`https://trello.com/1/connect?key=${config.get(&apos;apiKey&apos;)}&amp;name=Hoist%20unit%20test%20app&amp;response_type=token&amp;scope=read,write&amp;expiration=never&amp;return_url=https%3A%2F%2Fbouncer.hoist.test%2Fbounce`)
+        .to.have.been.calledWith(`https://trello.com/1/OAuthAuthorizeToken?name=Hoist%20unit%20test%20app&amp;oauth_token=${bounce.store[&apos;RequestToken&apos;]}`)
+    });
+    it(&apos;should store access token&apos;, () =&gt; {
+      return expect(bounce.store[&apos;RequestToken&apos;]).to.exist;
+    });
+    it(&apos;should store access token secret&apos;, () =&gt; {
+      console.log(bounce.store);
+      return expect(bounce.store[&apos;RequestTokenSecret&apos;]).to.exist;
+    });
+    it(&apos;should record step&apos;, () =&gt; {
+      return expect(bounce.store[&apos;currentStep&apos;]).to.eql(&apos;RequestToken&apos;);
+    });
+  });
+  describe.skip(&apos;on second call&apos;, () =&gt; {
+    let bounce;
+    before(function () {
+      bounce = {
+        store: {
+          currentStep: &apos;RequestToken&apos;,
+          RequestToken: config.get(&apos;requestToken&apos;),
+          RequestTokenSecret: config.get(&apos;requestTokenSecret&apos;)
+        },
+        query: {
+          oauth_verifier: config.get(&apos;oauthVerifier&apos;)
+        },
+        get: function (key) {
+          return this.store[key];
+        },
+        delete: function (key) {
+          delete this.store[key];
+          return Promise.resolve(null);
+        },
+        set: function (key, value) {
+          this.store[key] = value;
+          return Promise.resolve(null);
+        },
+        redirect: function () {
+          console.log(&apos;redirect&apos;, arguments);
+          return Promise.resolve(null);
+        },
+        done: function () {
+          console.log(&apos;done&apos;, arguments);
+          return Promise.resolve(null);
+        }
+      };
+
+      sinon.spy(bounce, &apos;redirect&apos;);
+      sinon.spy(bounce, &apos;done&apos;);
+      return _connector.receiveBounce(bounce);
+    });
+    it(&apos;should call done&apos;, () =&gt; {
+      return expect(bounce.done).to.have.been.called;
+    });
+    it(&apos;should store access token&apos;, () =&gt; {
+      return expect(bounce.store[&apos;AccessToken&apos;]).to.exist;
+    });
+    it(&apos;should store access token secret&apos;, () =&gt; {
+      console.log(bounce.store);
+      return expect(bounce.store[&apos;AccessTokenSecret&apos;]).to.exist;
+    });
+    it(&apos;should record step&apos;, () =&gt; {
+      return expect(bounce.store[&apos;currentStep&apos;]).to.eql(&apos;AccessToken&apos;);
     });
   });
 });

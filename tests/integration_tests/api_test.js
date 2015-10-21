@@ -4,7 +4,7 @@ import {
   expect
 }
 from 'chai';
-describe("trello API", () => {
+describe.only("trello API", () => {
   let _connector;
   before(() => {
     _connector = new TrelloConnector({

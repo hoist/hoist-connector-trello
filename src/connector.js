@@ -2,11 +2,32 @@ import logger from '@hoist/logger';
 import config from 'config';
 import Trello from 'node-trello';
 import Bluebird from 'bluebird';
+import url from 'url';
+import {
+  OAuthConnectorBase
+}
+from '@hoist/oauth-connector';
+import {
+  merge
+}
+from 'lodash';
+
+let overrides = {
+  requestTokenUri: 'https://trello.com/1/OAuthGetRequestToken',
+  accessTokenUri: 'https://trello.com/1/OAuthGetAccessToken',
+  authorizationUri: 'https://trello.com/1/OAuthAuthorizeToken',
+  oauthVersion: '1.0'
+}
+let baseUri = {
+  protocol: 'https',
+  hostname: 'api.trello.com'
+}
+
 /*
  * The main class for connecting to Trello
- * @implements {ConnectorInterface}
+ * @extends {OAuthConnectorBase}
  */
-export default class TrelloConnector {
+export default class TrelloConnector extends OAuthConnectorBase {
 
   /**
    * create a new TrelloConnector
@@ -16,57 +37,47 @@ export default class TrelloConnector {
    * @param {string} configuration.appName - the application name as it should show up to the user in Trello
    */
   constructor(configuration) {
+    overrides.authorizationUri = `${overrides.authorizationUri}?name=${configuration.appName}&expiration=never&scope=read,write`
+    configuration.consumerKey = configuration.apiKey;
+    configuration.consumerSecret = configuration.apiSecret;
+    super(merge({}, configuration, overrides));
     this._logger = logger.child({
       cls: TrelloConnector
-    })
-    this._configuration = configuration;
+    });
   }
 
-  /**
-   * @param {AuthorizationStore} authorization - the users authorization
-   */
-  receiveBounce(authorization) {
-    let authStep = authorization.get('currentStep')
-    switch (authStep) {
-    case 'bouncing':
-      this._logger.info('returned from trello');
-      return Promise.all([
-          authorization.set('authToken', authorization.query.token),
-          authorization.set('currentStep', 'done')
-        ])
-        .then(() => {
-          return authorization.done();
-        });
-      break;
-    default:
-      this._logger.info('redirecting user to trello');
-      return authorization.set('currentStep', 'bouncing')
-        .then(() => {
-          return authorization.redirect(`https://trello.com/1/connect?key=${this._configuration.apiKey}&name=${encodeURIComponent(this._configuration.appName)}&response_type=token&scope=read,write&expiration=never&return_url=${encodeURIComponent('https://'+config.get('Hoist.domains.bouncer')+'/bounce')}`)
-        });
-    }
-  }
 
-  /**
-   * authorize the oauth connection with existing parameters
-   * @param {<AuthorizationStore>} authorization - the users authorization
-   */
-  authorize(authorization) {
-    this._authToken = authorization.get('authToken');
-    this._trello = new Trello(this._configuration.apiKey, this._authToken);
-    Bluebird.promisifyAll(this._trello);
+  get(path, urlArguments) {
+    var uri = merge({}, {
+      pathname: path,
+      query: urlArguments
+    }, baseUri);
+    return this._performRequest('GET', url.format(uri), {}).then((result) => {
+      return JSON.parse(result[0]);
+    });
   }
-
-  get(url, urlArguments) {
-    return this._trello.getAsync(url, urlArguments || {});
+  post(path, body) {
+    var uri = merge({}, {
+      pathname: path
+    }, baseUri);
+    return this._performRequest('POST', url.format(uri), body || {}).then((result) => {
+      return JSON.parse(result[0]);
+    });
   }
-  post(url, body) {
-    return this._trello.postAsync(url, body || {});
+  put(path, body) {
+    var uri = merge({}, {
+      pathname: path
+    }, baseUri);
+    return this._performRequest('PUT', url.format(uri), body || {}).then((result) => {
+      return JSON.parse(result[0]);
+    });
   }
-  put(url, body) {
-    return this._trello.putAsync(url, body || {});
-  }
-  delete(url) {
-    return this._trello.deleteAsync(url);
+  delete(path) {
+    var uri = merge({}, {
+      pathname: path
+    }, baseUri);
+    return this._performRequest('DELETE', url.format(uri)).then((result) => {
+      return JSON.parse(result[0]);
+    });
   }
 }

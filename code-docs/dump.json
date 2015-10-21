@@ -9,7 +9,47 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import logger from '@hoist/logger';\nimport config from 'config';\nimport Trello from 'node-trello';\nimport Bluebird from 'bluebird';\n/*\n * The main class for connecting to Trello\n * @implements {ConnectorInterface}\n */\nexport default class TrelloConnector {\n\n  /**\n   * create a new TrelloConnector\n   * @param {object} configuration - the configuration details for this connector\n   * @param {string} configuration.apiKey - the trello API Key\n   * @param {string} configuration.apiSecret - the trello API secret\n   * @param {string} configuration.appName - the application name as it should show up to the user in Trello\n   */\n  constructor(configuration) {\n    this._logger = logger.child({\n      cls: TrelloConnector\n    })\n    this._configuration = configuration;\n  }\n\n  /**\n   * @param {AuthorizationStore} authorization - the users authorization\n   */\n  receiveBounce(authorization) {\n    let authStep = authorization.get('currentStep')\n    switch (authStep) {\n    case 'bouncing':\n      this._logger.info('returned from trello');\n      return Promise.all([\n          authorization.set('authToken', authorization.query.token),\n          authorization.set('currentStep', 'done')\n        ])\n        .then(() => {\n          return authorization.done();\n        });\n      break;\n    default:\n      this._logger.info('redirecting user to trello');\n      return authorization.set('currentStep', 'bouncing')\n        .then(() => {\n          return authorization.redirect(`https://trello.com/1/connect?key=${this._configuration.apiKey}&name=${encodeURIComponent(this._configuration.appName)}&response_type=token&scope=read,write&expiration=never&return_url=${encodeURIComponent('https://'+config.get('Hoist.domains.bouncer')+'/bounce')}`)\n        });\n    }\n  }\n\n  /**\n   * authorize the oauth connection with existing parameters\n   * @param {<AuthorizationStore>} authorization - the users authorization\n   */\n  authorize(authorization) {\n    this._authToken = authorization.get('authToken');\n    this._trello = new Trello(this._configuration.apiKey, this._authToken);\n    Bluebird.promisifyAll(this._trello);\n  }\n\n  get(url, urlArguments) {\n    return this._trello.getAsync(url, urlArguments || {});\n  }\n  post(url, body) {\n    return this._trello.postAsync(url, body || {});\n  }\n  put(url, body) {\n    return this._trello.putAsync(url, body || {});\n  }\n  delete(url) {\n    return this._trello.deleteAsync(url);\n  }\n}\n"
+    "content": "import logger from '@hoist/logger';\nimport config from 'config';\nimport Trello from 'node-trello';\nimport Bluebird from 'bluebird';\nimport url from 'url';\nimport {\n  OAuthConnectorBase\n}\nfrom '@hoist/oauth-connector';\nimport {\n  merge\n}\nfrom 'lodash';\n\nlet overrides = {\n  requestTokenUri: 'https://trello.com/1/OAuthGetRequestToken',\n  accessTokenUri: 'https://trello.com/1/OAuthGetAccessToken',\n  authorizationUri: 'https://trello.com/1/OAuthAuthorizeToken',\n  oauthVersion: '1.0'\n}\nlet baseUri = {\n  protocol: 'https',\n  hostname: 'api.trello.com'\n}\n\n/*\n * The main class for connecting to Trello\n * @extends {OAuthConnectorBase}\n */\nexport default class TrelloConnector extends OAuthConnectorBase {\n\n  /**\n   * create a new TrelloConnector\n   * @param {object} configuration - the configuration details for this connector\n   * @param {string} configuration.apiKey - the trello API Key\n   * @param {string} configuration.apiSecret - the trello API secret\n   * @param {string} configuration.appName - the application name as it should show up to the user in Trello\n   */\n  constructor(configuration) {\n    overrides.authorizationUri = `${overrides.authorizationUri}?name=${configuration.appName}&expiration=never&scope=read,write`\n    configuration.consumerKey = configuration.apiKey;\n    configuration.consumerSecret = configuration.apiSecret;\n    super(merge({}, configuration, overrides));\n    this._logger = logger.child({\n      cls: TrelloConnector\n    });\n  }\n\n\n  get(path, urlArguments) {\n    var uri = merge({}, {\n      pathname: path,\n      query: urlArguments\n    }, baseUri);\n    return this._performRequest('GET', url.format(uri), {}).then((result) => {\n      return JSON.parse(result[0]);\n    });\n  }\n  post(path, body) {\n    var uri = merge({}, {\n      pathname: path\n    }, baseUri);\n    return this._performRequest('POST', url.format(uri), body || {}).then((result) => {\n      return JSON.parse(result[0]);\n    });\n  }\n  put(path, body) {\n    var uri = merge({}, {\n      pathname: path\n    }, baseUri);\n    return this._performRequest('PUT', url.format(uri), body || {}).then((result) => {\n      return JSON.parse(result[0]);\n    });\n  }\n  delete(path) {\n    var uri = merge({}, {\n      pathname: path\n    }, baseUri);\n    return this._performRequest('DELETE', url.format(uri)).then((result) => {\n      return JSON.parse(result[0]);\n    });\n  }\n}\n"
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "overrides",
+    "memberof": "src/connector.js",
+    "longname": "src/connector.js~overrides",
+    "access": null,
+    "export": false,
+    "importPath": "hoist-connector-trello/src/connector.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 15,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "baseUri",
+    "memberof": "src/connector.js",
+    "longname": "src/connector.js~baseUri",
+    "access": null,
+    "export": false,
+    "importPath": "hoist-connector-trello/src/connector.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 21,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
   },
   {
     "kind": "class",
@@ -23,9 +63,12 @@
     "importPath": "hoist-connector-trello/src/connector.js",
     "importStyle": "TrelloConnector",
     "description": null,
-    "lineNumber": 9,
+    "lineNumber": 30,
     "undocument": true,
-    "interface": false
+    "interface": false,
+    "extends": [
+      "@hoist/oauth-connector~OAuthConnectorBase"
+    ]
   },
   {
     "kind": "constructor",
@@ -36,7 +79,7 @@
     "longname": "src/connector.js~TrelloConnector#constructor",
     "access": null,
     "description": "create a new TrelloConnector",
-    "lineNumber": 18,
+    "lineNumber": 39,
     "params": [
       {
         "nullable": null,
@@ -90,111 +133,7 @@
     "longname": "src/connector.js~TrelloConnector#_logger",
     "access": null,
     "description": null,
-    "lineNumber": 19,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "kind": "member",
-    "static": false,
-    "variation": null,
-    "name": "_configuration",
-    "memberof": "src/connector.js~TrelloConnector",
-    "longname": "src/connector.js~TrelloConnector#_configuration",
-    "access": null,
-    "description": null,
-    "lineNumber": 22,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "kind": "method",
-    "static": false,
-    "variation": null,
-    "name": "receiveBounce",
-    "memberof": "src/connector.js~TrelloConnector",
-    "longname": "src/connector.js~TrelloConnector#receiveBounce",
-    "access": null,
-    "description": null,
-    "lineNumber": 28,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "AuthorizationStore"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "authorization",
-        "description": "the users authorization"
-      }
-    ],
-    "return": {
-      "types": [
-        "*"
-      ]
-    },
-    "generator": false
-  },
-  {
-    "kind": "method",
-    "static": false,
-    "variation": null,
-    "name": "authorize",
-    "memberof": "src/connector.js~TrelloConnector",
-    "longname": "src/connector.js~TrelloConnector#authorize",
-    "access": null,
-    "description": "authorize the oauth connection with existing parameters",
-    "lineNumber": 54,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "<AuthorizationStore>"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "authorization",
-        "description": "the users authorization"
-      }
-    ],
-    "generator": false
-  },
-  {
-    "kind": "member",
-    "static": false,
-    "variation": null,
-    "name": "_authToken",
-    "memberof": "src/connector.js~TrelloConnector",
-    "longname": "src/connector.js~TrelloConnector#_authToken",
-    "access": null,
-    "description": null,
-    "lineNumber": 55,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "kind": "member",
-    "static": false,
-    "variation": null,
-    "name": "_trello",
-    "memberof": "src/connector.js~TrelloConnector",
-    "longname": "src/connector.js~TrelloConnector#_trello",
-    "access": null,
-    "description": null,
-    "lineNumber": 56,
+    "lineNumber": 44,
     "undocument": true,
     "type": {
       "types": [
@@ -211,11 +150,11 @@
     "longname": "src/connector.js~TrelloConnector#get",
     "access": null,
     "description": null,
-    "lineNumber": 60,
+    "lineNumber": 50,
     "undocument": true,
     "params": [
       {
-        "name": "url",
+        "name": "path",
         "types": [
           "*"
         ]
@@ -243,11 +182,11 @@
     "longname": "src/connector.js~TrelloConnector#post",
     "access": null,
     "description": null,
-    "lineNumber": 63,
+    "lineNumber": 59,
     "undocument": true,
     "params": [
       {
-        "name": "url",
+        "name": "path",
         "types": [
           "*"
         ]
@@ -275,11 +214,11 @@
     "longname": "src/connector.js~TrelloConnector#put",
     "access": null,
     "description": null,
-    "lineNumber": 66,
+    "lineNumber": 67,
     "undocument": true,
     "params": [
       {
-        "name": "url",
+        "name": "path",
         "types": [
           "*"
         ]
@@ -307,11 +246,11 @@
     "longname": "src/connector.js~TrelloConnector#delete",
     "access": null,
     "description": null,
-    "lineNumber": 69,
+    "lineNumber": 75,
     "undocument": true,
     "params": [
       {
-        "name": "url",
+        "name": "path",
         "types": [
           "*"
         ]
@@ -1188,7 +1127,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import TrelloConnector from '../../src/connector';\nimport config from 'config';\nimport sinon from 'sinon';\nimport {\n  expect\n}\nfrom 'chai';\ndescribe('receiveBounce', () => {\n  let _connector;\n  before(() => {\n    _connector = new TrelloConnector({\n      apiKey: config.get('apiKey'),\n      apiSecret: config.get('apiSecret'),\n      appName: 'Hoist unit test app'\n    });\n  });\n  describe('on first call', () => {\n    let bounce;\n    before(function () {\n      bounce = {\n        store: {},\n        get: function (key) {\n          return this.store[key];\n        },\n        delete: function (key) {\n          delete this.store[key];\n          return Promise.resolve(null);\n        },\n        set: function (key, value) {\n          this.store[key] = value;\n          return Promise.resolve(null);\n        },\n        redirect: function () {\n          console.log('redirect', arguments);\n          return Promise.resolve(null);\n        },\n        done: function () {\n          console.log('done', arguments);\n          return Promise.resolve(null);\n        }\n      };\n\n      sinon.spy(bounce, 'redirect');\n      return _connector.receiveBounce(bounce);\n    });\n    it('should redirect', () => {\n      return expect(bounce.redirect)\n        .to.have.been.calledWith(`https://trello.com/1/connect?key=${config.get('apiKey')}&name=Hoist%20unit%20test%20app&response_type=token&scope=read,write&expiration=never&return_url=https%3A%2F%2Fbouncer.hoist.test%2Fbounce`)\n    });\n  });\n});\n"
+    "content": "import TrelloConnector from '../../src/connector';\nimport config from 'config';\nimport sinon from 'sinon';\nimport {\n  expect\n}\nfrom 'chai';\ndescribe('receiveBounce', () => {\n  let _connector;\n  before(() => {\n    _connector = new TrelloConnector({\n      apiKey: config.get('apiKey'),\n      apiSecret: config.get('apiSecret'),\n      appName: 'Hoist unit test app'\n    });\n  });\n  describe('on first call', () => {\n    let bounce;\n    before(function () {\n      bounce = {\n        store: {},\n        get: function (key) {\n          return this.store[key];\n        },\n        delete: function (key) {\n          delete this.store[key];\n          return Promise.resolve(null);\n        },\n        set: function (key, value) {\n          this.store[key] = value;\n          return Promise.resolve(null);\n        },\n        redirect: function () {\n          console.log('redirect', arguments);\n          return Promise.resolve(null);\n        },\n        done: function () {\n          console.log('done', arguments);\n          return Promise.resolve(null);\n        }\n      };\n\n      sinon.spy(bounce, 'redirect');\n      return _connector.receiveBounce(bounce);\n    });\n    it('should redirect', () => {\n      return expect(bounce.redirect)\n        .to.have.been.calledWith(`https://trello.com/1/OAuthAuthorizeToken?name=Hoist%20unit%20test%20app&oauth_token=${bounce.store['RequestToken']}`)\n    });\n    it('should store access token', () => {\n      return expect(bounce.store['RequestToken']).to.exist;\n    });\n    it('should store access token secret', () => {\n      console.log(bounce.store);\n      return expect(bounce.store['RequestTokenSecret']).to.exist;\n    });\n    it('should record step', () => {\n      return expect(bounce.store['currentStep']).to.eql('RequestToken');\n    });\n  });\n  describe.skip('on second call', () => {\n    let bounce;\n    before(function () {\n      bounce = {\n        store: {\n          currentStep: 'RequestToken',\n          RequestToken: config.get('requestToken'),\n          RequestTokenSecret: config.get('requestTokenSecret')\n        },\n        query: {\n          oauth_verifier: config.get('oauthVerifier')\n        },\n        get: function (key) {\n          return this.store[key];\n        },\n        delete: function (key) {\n          delete this.store[key];\n          return Promise.resolve(null);\n        },\n        set: function (key, value) {\n          this.store[key] = value;\n          return Promise.resolve(null);\n        },\n        redirect: function () {\n          console.log('redirect', arguments);\n          return Promise.resolve(null);\n        },\n        done: function () {\n          console.log('done', arguments);\n          return Promise.resolve(null);\n        }\n      };\n\n      sinon.spy(bounce, 'redirect');\n      sinon.spy(bounce, 'done');\n      return _connector.receiveBounce(bounce);\n    });\n    it('should call done', () => {\n      return expect(bounce.done).to.have.been.called;\n    });\n    it('should store access token', () => {\n      return expect(bounce.store['AccessToken']).to.exist;\n    });\n    it('should store access token secret', () => {\n      console.log(bounce.store);\n      return expect(bounce.store['AccessTokenSecret']).to.exist;\n    });\n    it('should record step', () => {\n      return expect(bounce.store['currentStep']).to.eql('AccessToken');\n    });\n  });\n});\n"
   },
   {
     "kind": "testDescribe",
@@ -1230,6 +1169,97 @@
     "lineNumber": 46
   },
   {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it3",
+    "testId": 3,
+    "memberof": "tests/integration_tests/recieve_bounce_tests.js~describe0.describe1",
+    "testDepth": 2,
+    "longname": "tests/integration_tests/recieve_bounce_tests.js~describe0.describe1.it3",
+    "access": null,
+    "description": "should store access token",
+    "lineNumber": 50
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it4",
+    "testId": 4,
+    "memberof": "tests/integration_tests/recieve_bounce_tests.js~describe0.describe1",
+    "testDepth": 2,
+    "longname": "tests/integration_tests/recieve_bounce_tests.js~describe0.describe1.it4",
+    "access": null,
+    "description": "should store access token secret",
+    "lineNumber": 53
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it5",
+    "testId": 5,
+    "memberof": "tests/integration_tests/recieve_bounce_tests.js~describe0.describe1",
+    "testDepth": 2,
+    "longname": "tests/integration_tests/recieve_bounce_tests.js~describe0.describe1.it5",
+    "access": null,
+    "description": "should record step",
+    "lineNumber": 57
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it6",
+    "testId": 6,
+    "memberof": "tests/integration_tests/recieve_bounce_tests.js~describe0",
+    "testDepth": 1,
+    "longname": "tests/integration_tests/recieve_bounce_tests.js~describe0.it6",
+    "access": null,
+    "description": "should call done",
+    "lineNumber": 98
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it7",
+    "testId": 7,
+    "memberof": "tests/integration_tests/recieve_bounce_tests.js~describe0",
+    "testDepth": 1,
+    "longname": "tests/integration_tests/recieve_bounce_tests.js~describe0.it7",
+    "access": null,
+    "description": "should store access token",
+    "lineNumber": 101
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it8",
+    "testId": 8,
+    "memberof": "tests/integration_tests/recieve_bounce_tests.js~describe0",
+    "testDepth": 1,
+    "longname": "tests/integration_tests/recieve_bounce_tests.js~describe0.it8",
+    "access": null,
+    "description": "should store access token secret",
+    "lineNumber": 104
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it9",
+    "testId": 9,
+    "memberof": "tests/integration_tests/recieve_bounce_tests.js~describe0",
+    "testDepth": 1,
+    "longname": "tests/integration_tests/recieve_bounce_tests.js~describe0.it9",
+    "access": null,
+    "description": "should record step",
+    "lineNumber": 108
+  },
+  {
     "kind": "testFile",
     "static": true,
     "variation": null,
@@ -1245,11 +1275,11 @@
     "kind": "testDescribe",
     "static": true,
     "variation": null,
-    "name": "describe3",
-    "testId": 3,
+    "name": "describe10",
+    "testId": 10,
     "memberof": "tests/integration_tests/webhooks_tests.js",
     "testDepth": 0,
-    "longname": "tests/integration_tests/webhooks_tests.js~describe3",
+    "longname": "tests/integration_tests/webhooks_tests.js~describe10",
     "access": null,
     "description": "can create a webhook",
     "lineNumber": 22
@@ -1258,11 +1288,11 @@
     "kind": "testIt",
     "static": true,
     "variation": null,
-    "name": "it4",
-    "testId": 4,
-    "memberof": "tests/integration_tests/webhooks_tests.js~describe3",
+    "name": "it11",
+    "testId": 11,
+    "memberof": "tests/integration_tests/webhooks_tests.js~describe10",
     "testDepth": 1,
-    "longname": "tests/integration_tests/webhooks_tests.js~describe3.it4",
+    "longname": "tests/integration_tests/webhooks_tests.js~describe10.it11",
     "access": null,
     "description": "should return a list of lists",
     "lineNumber": 34

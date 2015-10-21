@@ -361,8 +361,50 @@ window.esdocSearchIndex = [
   ],
   [
     "",
+    "test-file/tests/integration_tests/recieve_bounce_tests.js.html#lineNumber57",
+    "receiveBounce on first call should record step",
+    "test"
+  ],
+  [
+    "",
     "test-file/tests/integration_tests/recieve_bounce_tests.js.html#lineNumber46",
     "receiveBounce on first call should redirect",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/integration_tests/recieve_bounce_tests.js.html#lineNumber50",
+    "receiveBounce on first call should store access token",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/integration_tests/recieve_bounce_tests.js.html#lineNumber53",
+    "receiveBounce on first call should store access token secret",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/integration_tests/recieve_bounce_tests.js.html#lineNumber98",
+    "receiveBounce should call done",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/integration_tests/recieve_bounce_tests.js.html#lineNumber108",
+    "receiveBounce should record step",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/integration_tests/recieve_bounce_tests.js.html#lineNumber101",
+    "receiveBounce should store access token",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/integration_tests/recieve_bounce_tests.js.html#lineNumber104",
+    "receiveBounce should store access token secret",
     "test"
   ],
   [
@@ -370,12 +412,6 @@ window.esdocSearchIndex = [
     "file/src/connector.js.html",
     "src/connector.js",
     "file"
-  ],
-  [
-    "src/connector.js~trelloconnector#authorize",
-    "class/src/connector.js~TrelloConnector.html#instance-method-authorize",
-    "src/connector.js~TrelloConnector#authorize",
-    "method"
   ],
   [
     "src/connector.js~trelloconnector#constructor",
@@ -405,12 +441,6 @@ window.esdocSearchIndex = [
     "src/connector.js~trelloconnector#put",
     "class/src/connector.js~TrelloConnector.html#instance-method-put",
     "src/connector.js~TrelloConnector#put",
-    "method"
-  ],
-  [
-    "src/connector.js~trelloconnector#receivebounce",
-    "class/src/connector.js~TrelloConnector.html#instance-method-receiveBounce",
-    "src/connector.js~TrelloConnector#receiveBounce",
     "method"
   ],
   [

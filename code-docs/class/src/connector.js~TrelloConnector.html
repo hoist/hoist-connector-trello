@@ -53,13 +53,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import TrelloConnector from &apos;<span><a href="file/src/connector.js.html#lineNumber9">hoist-connector-trello/src/connector.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import TrelloConnector from &apos;<span><a href="file/src/connector.js.html#lineNumber30">hoist-connector-trello/src/connector.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/connector.js.html#lineNumber9">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/connector.js.html#lineNumber30">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -69,7 +69,7 @@
 
   
   
-  
+  <div class="flat-list" data-ice="extendsChain"><h4>Extends:</h4><div><span>@hoist/oauth-connector~OAuthConnectorBase</span> &#x2192; TrelloConnector</div></div>
   
   
   
@@ -141,33 +141,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/connector.js~TrelloConnector.html#instance-method-authorize">authorize</a></span></span><span data-ice="signature">(authorization: &lt;<span>AuthorizationStore</span>&gt;)</span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>authorize the oauth connection with existing parameters</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-           <span data-ice="name"><span><a href="class/src/connector.js~TrelloConnector.html#instance-method-delete">delete</a></span></span><span data-ice="signature">(url: <span>*</span>): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/connector.js~TrelloConnector.html#instance-method-delete">delete</a></span></span><span data-ice="signature">(path: <span>*</span>): <span>*</span></span>
         </p>
       </div>
       <div>
@@ -192,7 +166,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/connector.js~TrelloConnector.html#instance-method-get">get</a></span></span><span data-ice="signature">(url: <span>*</span>, urlArguments: <span>*</span>): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/connector.js~TrelloConnector.html#instance-method-get">get</a></span></span><span data-ice="signature">(path: <span>*</span>, urlArguments: <span>*</span>): <span>*</span></span>
         </p>
       </div>
       <div>
@@ -217,7 +191,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/connector.js~TrelloConnector.html#instance-method-post">post</a></span></span><span data-ice="signature">(url: <span>*</span>, body: <span>*</span>): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/connector.js~TrelloConnector.html#instance-method-post">post</a></span></span><span data-ice="signature">(path: <span>*</span>, body: <span>*</span>): <span>*</span></span>
         </p>
       </div>
       <div>
@@ -242,32 +216,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/connector.js~TrelloConnector.html#instance-method-put">put</a></span></span><span data-ice="signature">(url: <span>*</span>, body: <span>*</span>): <span>*</span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-           <span data-ice="name"><span><a href="class/src/connector.js~TrelloConnector.html#instance-method-receiveBounce">receiveBounce</a></span></span><span data-ice="signature">(authorization: <span>AuthorizationStore</span>): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/connector.js~TrelloConnector.html#instance-method-put">put</a></span></span><span data-ice="signature">(path: <span>*</span>, body: <span>*</span>): <span>*</span></span>
         </p>
       </div>
       <div>
@@ -302,7 +251,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber18">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber39">source</a></span></span>
     </span>
   </h3>
 
@@ -375,75 +324,17 @@
 <div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-authorize">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    <span data-ice="name">authorize</span><span data-ice="signature">(authorization: &lt;<span>AuthorizationStore</span>&gt;)</span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber54">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  <div data-ice="description"><p>authorize the oauth connection with existing parameters</p>
-</div>
-
-  
-
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">authorization</td>
-      <td data-ice="type">&lt;<span>AuthorizationStore</span>&gt;</td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>the users authorization</p>
-</td>
-    </tr>
-</tbody>
-  </table>
-</div>
-</div>
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-delete">
     <span class="access" data-ice="access">public</span>
     
     
     
     
-    <span data-ice="name">delete</span><span data-ice="signature">(url: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">delete</span><span data-ice="signature">(path: <span>*</span>): <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber69">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber75">source</a></span></span>
     </span>
   </h3>
 
@@ -463,7 +354,7 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">url</td>
+      <td data-ice="name" data-depth="0">path</td>
       <td data-ice="type"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
@@ -505,11 +396,11 @@
     
     
     
-    <span data-ice="name">get</span><span data-ice="signature">(url: <span>*</span>, urlArguments: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">get</span><span data-ice="signature">(path: <span>*</span>, urlArguments: <span>*</span>): <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber60">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber50">source</a></span></span>
     </span>
   </h3>
 
@@ -529,7 +420,7 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">url</td>
+      <td data-ice="name" data-depth="0">path</td>
       <td data-ice="type"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
@@ -577,11 +468,11 @@
     
     
     
-    <span data-ice="name">post</span><span data-ice="signature">(url: <span>*</span>, body: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">post</span><span data-ice="signature">(path: <span>*</span>, body: <span>*</span>): <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber63">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber59">source</a></span></span>
     </span>
   </h3>
 
@@ -601,7 +492,7 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">url</td>
+      <td data-ice="name" data-depth="0">path</td>
       <td data-ice="type"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
@@ -649,11 +540,11 @@
     
     
     
-    <span data-ice="name">put</span><span data-ice="signature">(url: <span>*</span>, body: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">put</span><span data-ice="signature">(path: <span>*</span>, body: <span>*</span>): <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber66">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber67">source</a></span></span>
     </span>
   </h3>
 
@@ -673,7 +564,7 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">url</td>
+      <td data-ice="name" data-depth="0">path</td>
       <td data-ice="type"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
@@ -683,73 +574,6 @@
       <td data-ice="type"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
-    </tr>
-</tbody>
-  </table>
-</div>
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tr>
-        <td class="return-type" data-ice="returnType"><span>*</span></td>
-        
-      </tr>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-receiveBounce">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    <span data-ice="name">receiveBounce</span><span data-ice="signature">(authorization: <span>AuthorizationStore</span>): <span>*</span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/connector.js.html#lineNumber28">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  
-
-  
-
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">authorization</td>
-      <td data-ice="type"><span>AuthorizationStore</span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>the users authorization</p>
-</td>
     </tr>
 </tbody>
   </table>

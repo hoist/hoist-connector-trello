@@ -1,0 +1,35 @@
+{
+  "name": "Trello",
+  "slug": "trello",
+  "url": "https://trello.com/",
+  "auth_types": {
+    "Public": {
+      "setup_help": "./samples/getting_started.md",
+      "requires_signing": true
+    }
+  },
+  "settings": [{
+    "key": "apiKey",
+    "type": "text",
+    "description": "API Key",
+    "for_types": ["Public"],
+    "required": true
+  }, {
+    "key": "apiSecret",
+    "type": "text",
+    "description": "API Secret",
+    "for_types": ["Public"],
+    "required": true
+  }, {
+    "key": "appName",
+    "type": "text",
+    "description": "Application Name",
+    "for_types": ["Public"],
+    "required": true
+  }],
+  "samples": {
+    "getting_started": "./samples/getting_started.js"
+  },
+  "endpoints": {
+  }
+}

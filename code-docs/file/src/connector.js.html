@@ -57,11 +57,32 @@
 import config from &apos;config&apos;;
 import Trello from &apos;node-trello&apos;;
 import Bluebird from &apos;bluebird&apos;;
+import url from &apos;url&apos;;
+import {
+  OAuthConnectorBase
+}
+from &apos;@hoist/oauth-connector&apos;;
+import {
+  merge
+}
+from &apos;lodash&apos;;
+
+let overrides = {
+  requestTokenUri: &apos;https://trello.com/1/OAuthGetRequestToken&apos;,
+  accessTokenUri: &apos;https://trello.com/1/OAuthGetAccessToken&apos;,
+  authorizationUri: &apos;https://trello.com/1/OAuthAuthorizeToken&apos;,
+  oauthVersion: &apos;1.0&apos;
+}
+let baseUri = {
+  protocol: &apos;https&apos;,
+  hostname: &apos;api.trello.com&apos;
+}
+
 /*
  * The main class for connecting to Trello
- * @implements {ConnectorInterface}
+ * @extends {OAuthConnectorBase}
  */
-export default class TrelloConnector {
+export default class TrelloConnector extends OAuthConnectorBase {
 
   /**
    * create a new TrelloConnector
@@ -71,58 +92,48 @@ export default class TrelloConnector {
    * @param {string} configuration.appName - the application name as it should show up to the user in Trello
    */
   constructor(configuration) {
+    overrides.authorizationUri = `${overrides.authorizationUri}?name=${configuration.appName}&amp;expiration=never&amp;scope=read,write`
+    configuration.consumerKey = configuration.apiKey;
+    configuration.consumerSecret = configuration.apiSecret;
+    super(merge({}, configuration, overrides));
     this._logger = logger.child({
       cls: TrelloConnector
-    })
-    this._configuration = configuration;
+    });
   }
 
-  /**
-   * @param {AuthorizationStore} authorization - the users authorization
-   */
-  receiveBounce(authorization) {
-    let authStep = authorization.get(&apos;currentStep&apos;)
-    switch (authStep) {
-    case &apos;bouncing&apos;:
-      this._logger.info(&apos;returned from trello&apos;);
-      return Promise.all([
-          authorization.set(&apos;authToken&apos;, authorization.query.token),
-          authorization.set(&apos;currentStep&apos;, &apos;done&apos;)
-        ])
-        .then(() =&gt; {
-          return authorization.done();
-        });
-      break;
-    default:
-      this._logger.info(&apos;redirecting user to trello&apos;);
-      return authorization.set(&apos;currentStep&apos;, &apos;bouncing&apos;)
-        .then(() =&gt; {
-          return authorization.redirect(`https://trello.com/1/connect?key=${this._configuration.apiKey}&amp;name=${encodeURIComponent(this._configuration.appName)}&amp;response_type=token&amp;scope=read,write&amp;expiration=never&amp;return_url=${encodeURIComponent(&apos;https://&apos;+config.get(&apos;Hoist.domains.bouncer&apos;)+&apos;/bounce&apos;)}`)
-        });
-    }
-  }
 
-  /**
-   * authorize the oauth connection with existing parameters
-   * @param {&lt;AuthorizationStore&gt;} authorization - the users authorization
-   */
-  authorize(authorization) {
-    this._authToken = authorization.get(&apos;authToken&apos;);
-    this._trello = new Trello(this._configuration.apiKey, this._authToken);
-    Bluebird.promisifyAll(this._trello);
+  get(path, urlArguments) {
+    var uri = merge({}, {
+      pathname: path,
+      query: urlArguments
+    }, baseUri);
+    return this._performRequest(&apos;GET&apos;, url.format(uri), {}).then((result) =&gt; {
+      return JSON.parse(result[0]);
+    });
   }
-
-  get(url, urlArguments) {
-    return this._trello.getAsync(url, urlArguments || {});
+  post(path, body) {
+    var uri = merge({}, {
+      pathname: path
+    }, baseUri);
+    return this._performRequest(&apos;POST&apos;, url.format(uri), body || {}).then((result) =&gt; {
+      return JSON.parse(result[0]);
+    });
   }
-  post(url, body) {
-    return this._trello.postAsync(url, body || {});
+  put(path, body) {
+    var uri = merge({}, {
+      pathname: path
+    }, baseUri);
+    return this._performRequest(&apos;PUT&apos;, url.format(uri), body || {}).then((result) =&gt; {
+      return JSON.parse(result[0]);
+    });
   }
-  put(url, body) {
-    return this._trello.putAsync(url, body || {});
-  }
-  delete(url) {
-    return this._trello.deleteAsync(url);
+  delete(path) {
+    var uri = merge({}, {
+      pathname: path
+    }, baseUri);
+    return this._performRequest(&apos;DELETE&apos;, url.format(uri)).then((result) =&gt; {
+      return JSON.parse(result[0]);
+    });
   }
 }
 </code></pre>
