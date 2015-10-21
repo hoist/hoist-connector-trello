@@ -86,11 +86,9 @@ describe(&apos;receiveBounce&apos;, () =&gt; {
           return Promise.resolve(null);
         },
         redirect: function () {
-          console.log(&apos;redirect&apos;, arguments);
           return Promise.resolve(null);
         },
         done: function () {
-          console.log(&apos;done&apos;, arguments);
           return Promise.resolve(null);
         }
       };
@@ -100,13 +98,13 @@ describe(&apos;receiveBounce&apos;, () =&gt; {
     });
     it(&apos;should redirect&apos;, () =&gt; {
       return expect(bounce.redirect)
-        .to.have.been.calledWith(`https://trello.com/1/OAuthAuthorizeToken?name=Hoist%20unit%20test%20app&amp;oauth_token=${bounce.store[&apos;RequestToken&apos;]}`)
+        .to.have.been.calledWith(`https://trello.com/1/OAuthAuthorizeToken?name=Hoist%20unit%20test%20app&amp;expiration=never&amp;scope=read%2Cwrite&amp;oauth_token=${bounce.store[&apos;RequestToken&apos;]}`)
     });
     it(&apos;should store access token&apos;, () =&gt; {
       return expect(bounce.store[&apos;RequestToken&apos;]).to.exist;
     });
     it(&apos;should store access token secret&apos;, () =&gt; {
-      console.log(bounce.store);
+
       return expect(bounce.store[&apos;RequestTokenSecret&apos;]).to.exist;
     });
     it(&apos;should record step&apos;, () =&gt; {
@@ -137,11 +135,9 @@ describe(&apos;receiveBounce&apos;, () =&gt; {
           return Promise.resolve(null);
         },
         redirect: function () {
-          console.log(&apos;redirect&apos;, arguments);
           return Promise.resolve(null);
         },
         done: function () {
-          console.log(&apos;done&apos;, arguments);
           return Promise.resolve(null);
         }
       };
@@ -157,7 +153,6 @@ describe(&apos;receiveBounce&apos;, () =&gt; {
       return expect(bounce.store[&apos;AccessToken&apos;]).to.exist;
     });
     it(&apos;should store access token secret&apos;, () =&gt; {
-      console.log(bounce.store);
       return expect(bounce.store[&apos;AccessTokenSecret&apos;]).to.exist;
     });
     it(&apos;should record step&apos;, () =&gt; {

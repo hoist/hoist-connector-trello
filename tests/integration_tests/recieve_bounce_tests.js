@@ -31,11 +31,9 @@ describe('receiveBounce', () => {
           return Promise.resolve(null);
         },
         redirect: function () {
-          console.log('redirect', arguments);
           return Promise.resolve(null);
         },
         done: function () {
-          console.log('done', arguments);
           return Promise.resolve(null);
         }
       };
@@ -45,13 +43,13 @@ describe('receiveBounce', () => {
     });
     it('should redirect', () => {
       return expect(bounce.redirect)
-        .to.have.been.calledWith(`https://trello.com/1/OAuthAuthorizeToken?name=Hoist%20unit%20test%20app&oauth_token=${bounce.store['RequestToken']}`)
+        .to.have.been.calledWith(`https://trello.com/1/OAuthAuthorizeToken?name=Hoist%20unit%20test%20app&expiration=never&scope=read%2Cwrite&oauth_token=${bounce.store['RequestToken']}`)
     });
     it('should store access token', () => {
       return expect(bounce.store['RequestToken']).to.exist;
     });
     it('should store access token secret', () => {
-      console.log(bounce.store);
+
       return expect(bounce.store['RequestTokenSecret']).to.exist;
     });
     it('should record step', () => {
@@ -82,11 +80,9 @@ describe('receiveBounce', () => {
           return Promise.resolve(null);
         },
         redirect: function () {
-          console.log('redirect', arguments);
           return Promise.resolve(null);
         },
         done: function () {
-          console.log('done', arguments);
           return Promise.resolve(null);
         }
       };
@@ -102,7 +98,6 @@ describe('receiveBounce', () => {
       return expect(bounce.store['AccessToken']).to.exist;
     });
     it('should store access token secret', () => {
-      console.log(bounce.store);
       return expect(bounce.store['AccessTokenSecret']).to.exist;
     });
     it('should record step', () => {

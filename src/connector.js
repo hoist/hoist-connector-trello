@@ -37,7 +37,6 @@ export default class TrelloConnector extends OAuthConnectorBase {
    * @param {string} configuration.appName - the application name as it should show up to the user in Trello
    */
   constructor(configuration) {
-    overrides.authorizationUri = `${overrides.authorizationUri}?name=${configuration.appName}&expiration=never&scope=read,write`
     configuration.consumerKey = configuration.apiKey;
     configuration.consumerSecret = configuration.apiSecret;
     super(merge({}, configuration, overrides));
@@ -45,7 +44,12 @@ export default class TrelloConnector extends OAuthConnectorBase {
       cls: TrelloConnector
     });
   }
-
+  _setupAuthorizationQuery(query) {
+    query.name = this._configuration.appName;
+    query.expiration = "never";
+    query.scope = "read,write";
+    return query;
+  }
 
   get(path, urlArguments) {
     var uri = merge({}, {
