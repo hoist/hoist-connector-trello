@@ -122,7 +122,7 @@ class TrelloPoller {
       }).then(() =&gt; {
         this._logger.info(&apos;creating webhook endpoint&apos;);
         let hookUri = `https://${config.get(&apos;Hoist.domains.endpoint&apos;)}/${this._context.organisation.slug}/${this._context.application.slug}/${this._context.connectorKey}-incoming`;
-        return this._connector.post(`/repos/hooks`, {
+        return this._connector.post(`/1/webhooks`, {
           description: &apos;Hoist.io Endpoint&apos;,
           callbackURL: hookUri,
           idModel: this._context.authorization.get(&apos;SubscriptionModelId&apos;)
