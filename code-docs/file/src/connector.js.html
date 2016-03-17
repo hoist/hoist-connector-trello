@@ -98,7 +98,7 @@ export default class TrelloConnector extends OAuthConnectorBase {
       query: urlArguments
     }, baseUri);
     return this._performRequest(&apos;GET&apos;, url.format(uri), {}).then((result) =&gt; {
-      return JSON.parse(result[0]);
+      return JSON.parse(result);
     });
   }
   post(path, body) {
@@ -106,7 +106,7 @@ export default class TrelloConnector extends OAuthConnectorBase {
       pathname: path
     }, baseUri);
     return this._performRequest(&apos;POST&apos;, url.format(uri), body || {}).then((result) =&gt; {
-      return JSON.parse(result[0]);
+      return JSON.parse(result);
     });
   }
   put(path, body) {
@@ -114,7 +114,7 @@ export default class TrelloConnector extends OAuthConnectorBase {
       pathname: path
     }, baseUri);
     return this._performRequest(&apos;PUT&apos;, url.format(uri), body || {}).then((result) =&gt; {
-      return JSON.parse(result[0]);
+      return JSON.parse(result);
     });
   }
   delete(path) {
@@ -122,7 +122,7 @@ export default class TrelloConnector extends OAuthConnectorBase {
       pathname: path
     }, baseUri);
     return this._performRequest(&apos;DELETE&apos;, url.format(uri)).then((result) =&gt; {
-      return JSON.parse(result[0]);
+      return JSON.parse(result);
     });
   }
 }
